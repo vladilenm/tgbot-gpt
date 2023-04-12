@@ -2,5 +2,6 @@ node_modules
 .vscode
 build
 .DS_Store
-config/*
+config/default.json
+config/production.json
 .env
