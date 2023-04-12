@@ -7,8 +7,6 @@ export const INITIAL_SESSION = {
   messages: [],
 }
 
-console.log(config.get('TELEGRAM_TOKEN'))
-
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
 
 bot.use(session())
