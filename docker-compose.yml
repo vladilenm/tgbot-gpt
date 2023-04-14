@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongodb:
+    container_name: tgbot-db
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+  tgbot:
+    container_name: tgbot
+    image: 'tgbot'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/tgbot
+volumes:
+  mongo-data:

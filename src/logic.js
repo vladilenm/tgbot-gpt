@@ -2,6 +2,7 @@ import { code } from 'telegraf/format'
 import { openai } from './openai.js'
 import { ogg } from './ogg.js'
 import { gptMessage, removeFile } from './utils.js'
+import { saveConversation } from './mongo.js'
 
 export async function proccessVoiceMessage(ctx) {
   try {
@@ -18,9 +19,19 @@ export async function proccessVoiceMessage(ctx) {
     ctx.session.messages.push(gptMessage(text))
     const response = await openai.chat(ctx.session.messages)
 
+    console.log('Response', response)
+
+    if (!response)
+      return await ctx.reply(
+        `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${response}`
+      )
+
     ctx.session.messages.push(
       gptMessage(response.content, openai.roles.ASSISTANT)
     )
+
+    ctx.session.conversationId = await saveConversation(ctx.session, userId)
+
     await ctx.reply(response.content)
   } catch (e) {
     console.error(`Error while proccessing voice message`, e.message)
@@ -36,6 +47,9 @@ export async function proccessTextMessage(ctx) {
     ctx.session.messages.push(
       gptMessage(response.content, openai.roles.ASSISTANT)
     )
+
+    ctx.session.conversationId = await saveConversation(ctx.session, userId)
+
     await ctx.reply(response.content)
   } catch (e) {
     console.error(`Error while proccessing text message`, e.message)
