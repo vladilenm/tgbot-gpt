@@ -19,7 +19,35 @@ export async function proccessVoiceMessage(ctx) {
     ctx.session.messages.push(gptMessage(text))
     const response = await openai.chat(ctx.session.messages)
 
-    console.log('Response', response)
+    if (!response)
+      return await ctx.reply(
+        `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${response}`
+      )
+
+    ctx.session.messages.push(
+      gptMessage(response.content, openai.roles.ASSISTANT)
+    )
+
+    console.log('Session', JSON.stringify(ctx.session, null, 2))
+
+    ctx.session.conversationId = await saveConversation(ctx.session, userId)
+
+    await ctx.reply(response.content)
+  } catch (e) {
+    await ctx.reply(
+      `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${e.message}`
+    )
+    console.error(`Error while proccessing voice message`, e.message)
+  }
+}
+
+export async function proccessTextMessage(ctx) {
+  try {
+    const userId = String(ctx.message.from.id)
+
+    await ctx.reply(code('Секунду. Жду ответ от ChatGPT'))
+    ctx.session.messages.push(gptMessage(ctx.message.text))
+    const response = await openai.chat(ctx.session.messages)
 
     if (!response)
       return await ctx.reply(
@@ -34,24 +62,9 @@ export async function proccessVoiceMessage(ctx) {
 
     await ctx.reply(response.content)
   } catch (e) {
-    console.error(`Error while proccessing voice message`, e.message)
-  }
-}
-
-export async function proccessTextMessage(ctx) {
-  try {
-    await ctx.reply(code('Секунду. Жду ответ от ChatGPT'))
-    ctx.session.messages.push(gptMessage(ctx.message.text))
-    const response = await openai.chat(ctx.session.messages)
-
-    ctx.session.messages.push(
-      gptMessage(response.content, openai.roles.ASSISTANT)
+    await ctx.reply(
+      `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${e.message}`
     )
-
-    ctx.session.conversationId = await saveConversation(ctx.session, userId)
-
-    await ctx.reply(response.content)
-  } catch (e) {
     console.error(`Error while proccessing text message`, e.message)
   }
 }

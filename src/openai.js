@@ -23,6 +23,8 @@ class OpenAI {
         messages,
       })
 
+      console.log('Completion', completion.data)
+
       return completion.data.choices[0].message
     } catch (e) {
       console.error(`Error while chat completion: ${e.message}`)
