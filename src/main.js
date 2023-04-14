@@ -4,11 +4,7 @@ import config from 'config'
 import mongoose from 'mongoose'
 import { proccessVoiceMessage, proccessTextMessage } from './logic.js'
 import { createUser } from './mongo.js'
-
-const INITIAL_SESSION = {
-  messages: [],
-  conversationId: null,
-}
+import { emptySession } from './utils.js'
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
 
@@ -25,22 +21,22 @@ bot.use(async (ctx, next) => {
 })
 
 bot.command('new', async (ctx) => {
-  ctx.session = INITIAL_SESSION
+  ctx.session = emptySession()
   await ctx.reply('Жду вашего голосового сообщения')
 })
 
 bot.command('start', async (ctx) => {
-  ctx.session = INITIAL_SESSION
+  ctx.session = emptySession()
   await ctx.reply('Жду вашего голосового сообщения')
 })
 
 bot.on(message('voice'), async (ctx) => {
-  ctx.session ??= INITIAL_SESSION
+  ctx.session ??= emptySession()
   await proccessVoiceMessage(ctx)
 })
 
 bot.on(message('text'), async (ctx) => {
-  ctx.session ??= INITIAL_SESSION
+  ctx.session ??= emptySession()
   await proccessTextMessage(ctx)
   // ctx.reply(JSON.stringify(ctx.message.from, null, 2))
 })

@@ -12,3 +12,8 @@ export const gptMessage = (content, role = 'user') => ({
   content,
   role,
 })
+
+export const emptySession = () => ({
+  messages: [],
+  conversationId: null,
+})
