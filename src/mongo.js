@@ -2,15 +2,8 @@ import { UserModel } from './models/user.model.js'
 import { ConversationModel } from './models/conversation.model.js'
 import { mapContextData } from './utils.js'
 
-// export function mongoUser() {
-//   return (ctx, next) => {
-//     createUser(mapContextData(ctx))
-//     return next()
-//   }
-// }
-
 class MondoDB {
-  async createUser(from) {
+  async createOrGetUser(from) {
     const user = mapContextData(from)
 
     try {
@@ -37,6 +30,14 @@ class MondoDB {
         userId,
       }).save()
       console.log('Conversation', conversation)
+    } catch (e) {
+      console.log('Error in creating conversation', e.message)
+    }
+  }
+
+  async getConversations(userId) {
+    try {
+      return await ConversationModel.find({ userId })
     } catch (e) {
       console.log('Error in creating conversation', e.message)
     }

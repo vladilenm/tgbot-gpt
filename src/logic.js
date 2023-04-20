@@ -1,7 +1,12 @@
-import { code } from 'telegraf/format'
+import { bold, code } from 'telegraf/format'
 import { openai } from './openai.js'
 import { ogg } from './ogg.js'
-import { gptMessage, removeFile, emptySession } from './utils.js'
+import {
+  gptMessage,
+  removeFile,
+  emptySession,
+  printConversation,
+} from './utils.js'
 import { mongo } from './mongo.js'
 
 export async function proccessVoiceMessage(ctx) {
@@ -41,13 +46,41 @@ export async function proccessTextMessage(ctx) {
 export async function handleCallbackQuery(ctx) {
   try {
     if (ctx.update.callback_query.data === 'save_conversation') {
-      const user = await mongo.createUser(ctx.update.callback_query.from)
+      const user = await mongo.createOrGetUser(ctx.update.callback_query.from)
       await mongo.saveConversation(ctx.session.messages, user._id)
       ctx.session = emptySession()
       await ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую.')
+    } else if (ctx.update.callback_query.data.startsWith('conversation')) {
+      const conversationId = ctx.update.callback_query.data.split('-')[1]
+      // TODO: WTF
+      const conversation = ctx.session.conversations.find(
+        (c) => c._id == conversationId.trim()
+      )
+      await ctx.replyWithHTML(printConversation(conversation))
     }
   } catch (e) {
     console.error(`Error while handling callback query`, e.message)
+  }
+}
+
+export async function getUserConversations(ctx) {
+  try {
+    const user = await mongo.createOrGetUser(ctx.message.from)
+    const conversations = await mongo.getConversations(user._id)
+    ctx.session.conversations = conversations
+
+    await ctx.reply(bold('Ваши переписки:'), {
+      reply_markup: {
+        inline_keyboard: conversations.map((c) => [
+          {
+            text: c.messages[0].content,
+            callback_data: `conversation-${c._id}`,
+          },
+        ]),
+      },
+    })
+  } catch (e) {
+    console.error(`Error while getting conversations`, e.message)
   }
 }
 

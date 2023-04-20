@@ -6,12 +6,14 @@ import {
   proccessVoiceMessage,
   proccessTextMessage,
   handleCallbackQuery,
+  getUserConversations,
 } from './logic.js'
-import { initCommand, normalizeSession } from './utils.js'
+import { initCommand, normalize } from './utils.js'
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
 
 bot.use(session())
+bot.use(normalize())
 
 bot.command(
   'new',
@@ -25,18 +27,18 @@ bot.command(
   )
 )
 
+bot.command('history', getUserConversations)
+
 bot.command('admin', async (ctx) => {
   if (ctx.message.from.id !== config.get('ADMIN_TG_ID')) return
   await ctx.reply('Привет Владилен')
 })
 
 bot.on(message('voice'), async (ctx) => {
-  normalizeSession(ctx)
   await proccessVoiceMessage(ctx)
 })
 
 bot.on(message('text'), async (ctx) => {
-  normalizeSession(ctx)
   await proccessTextMessage(ctx)
 })
 
