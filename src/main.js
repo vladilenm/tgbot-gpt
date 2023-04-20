@@ -2,44 +2,45 @@ import { Telegraf, session } from 'telegraf'
 import { message } from 'telegraf/filters'
 import config from 'config'
 import mongoose from 'mongoose'
-import { proccessVoiceMessage, proccessTextMessage } from './logic.js'
-import { createUser } from './mongo.js'
-import { emptySession } from './utils.js'
+import {
+  proccessVoiceMessage,
+  proccessTextMessage,
+  handleCallbackQuery,
+} from './logic.js'
+import { initCommand, normalizeSession } from './utils.js'
 
 const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
 
 bot.use(session())
 
-bot.use(async (ctx, next) => {
-  const mapData = {
-    telegramId: ctx.message.from.id,
-    username: ctx.message.from.username,
-    firstname: ctx.message.from.first_name,
-  }
-  createUser(mapData)
-  return next()
-})
+bot.command(
+  'new',
+  initCommand('Начат новый диалог. Жду голосовое или текстовое сообщение.')
+)
 
-bot.command('new', async (ctx) => {
-  ctx.session = emptySession()
-  await ctx.reply('Жду вашего голосового сообщения')
-})
+bot.command(
+  'start',
+  initCommand(
+    'Добро пожаловать в бота. Отправьте голосовое или текстовое сообщение для общение с ChatGPT.'
+  )
+)
 
-bot.command('start', async (ctx) => {
-  ctx.session = emptySession()
-  await ctx.reply('Жду вашего голосового сообщения')
+bot.command('admin', async (ctx) => {
+  if (ctx.message.from.id !== config.get('ADMIN_TG_ID')) return
+  await ctx.reply('Привет Владилен')
 })
 
 bot.on(message('voice'), async (ctx) => {
-  ctx.session ??= emptySession()
+  normalizeSession(ctx)
   await proccessVoiceMessage(ctx)
 })
 
 bot.on(message('text'), async (ctx) => {
-  ctx.session ??= emptySession()
+  normalizeSession(ctx)
   await proccessTextMessage(ctx)
-  // ctx.reply(JSON.stringify(ctx.message.from, null, 2))
 })
+
+bot.on('callback_query', handleCallbackQuery)
 
 async function start() {
   try {

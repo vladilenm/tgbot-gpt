@@ -1,38 +1,46 @@
 import { UserModel } from './models/user.model.js'
 import { ConversationModel } from './models/conversation.model.js'
+import { mapContextData } from './utils.js'
 
-export async function createUser(user) {
-  try {
-    const existingUser = await UserModel.findOne({
-      telegramId: user.telegramId,
-    })
+// export function mongoUser() {
+//   return (ctx, next) => {
+//     createUser(mapContextData(ctx))
+//     return next()
+//   }
+// }
 
-    if (existingUser) return
+class MondoDB {
+  async createUser(from) {
+    const user = mapContextData(from)
 
-    await new UserModel({
-      telegramId: user.telegramId,
-      firstname: user.firstname,
-      username: user.username,
-    }).save()
-  } catch (e) {
-    console.log('Error in creating user', e.message)
+    try {
+      const existingUser = await UserModel.findOne({
+        telegramId: user.telegramId,
+      })
+
+      if (existingUser) return existingUser
+
+      return await new UserModel({
+        telegramId: user.telegramId,
+        firstname: user.firstname,
+        username: user.username,
+      }).save()
+    } catch (e) {
+      console.log('Error in creating user', e.message)
+    }
+  }
+
+  async saveConversation(messages, userId) {
+    try {
+      const conversation = await new ConversationModel({
+        messages,
+        userId,
+      }).save()
+      console.log('Conversation', conversation)
+    } catch (e) {
+      console.log('Error in creating conversation', e.message)
+    }
   }
 }
 
-export async function saveConversation(
-  { conversationId, messages },
-  telegramId
-) {
-  try {
-    const user = await UserModel.findOne({ telegramId })
-    const conversation = conversationId
-      ? await ConversationModel.findById(conversationId)
-      : new ConversationModel({ messages, userId: user._id })
-
-    conversation.messages = messages
-    const data = await conversation.save()
-    return data._id
-  } catch (e) {
-    console.log('Error in creating conversation', e.message)
-  }
-}
+export const mongo = new MondoDB()
