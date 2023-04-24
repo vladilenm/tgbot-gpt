@@ -25,7 +25,7 @@ class OpenAI {
         messages,
       })
 
-      console.log('Completion', completion.data)
+      console.log('Usage', completion.data.usage)
 
       return completion.data.choices[0].message
     } catch (e) {

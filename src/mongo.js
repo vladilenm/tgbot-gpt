@@ -25,11 +25,10 @@ class MondoDB {
 
   async saveConversation(messages, userId) {
     try {
-      const conversation = await new ConversationModel({
+      await new ConversationModel({
         messages,
         userId,
       }).save()
-      console.log('Conversation', conversation)
     } catch (e) {
       console.log('Error in creating conversation', e.message)
     }

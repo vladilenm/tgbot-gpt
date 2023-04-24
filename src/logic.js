@@ -86,6 +86,8 @@ export async function getUserConversations(ctx) {
 
 async function proccessGPTResponse(ctx, text) {
   try {
+    console.log('DEBUG', ctx.session.messages)
+
     ctx.session.messages.push(gptMessage(text))
     const response = await openai.chat(ctx.session.messages)
 

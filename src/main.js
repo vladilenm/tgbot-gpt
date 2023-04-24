@@ -34,13 +34,9 @@ bot.command('admin', async (ctx) => {
   await ctx.reply('Привет Владилен')
 })
 
-bot.on(message('voice'), async (ctx) => {
-  await proccessVoiceMessage(ctx)
-})
+bot.on(message('voice'), proccessVoiceMessage)
 
-bot.on(message('text'), async (ctx) => {
-  await proccessTextMessage(ctx)
-})
+bot.on(message('text'), proccessTextMessage)
 
 bot.on('callback_query', handleCallbackQuery)
 
