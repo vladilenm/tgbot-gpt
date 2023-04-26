@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN npm install -g pm2
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["pm2-runtime", "start", "./src/main.js"]

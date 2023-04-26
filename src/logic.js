@@ -52,7 +52,6 @@ export async function handleCallbackQuery(ctx) {
       await ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую.')
     } else if (ctx.update.callback_query.data.startsWith('conversation')) {
       const conversationId = ctx.update.callback_query.data.split('-')[1]
-      // TODO: WTF
       const conversation = ctx.session.conversations.find(
         (c) => c._id == conversationId.trim()
       )

@@ -1,5 +1,4 @@
 import { unlink } from 'fs/promises'
-import { bold } from 'telegraf/format'
 import { openai } from './openai.js'
 
 const MAX_CONVERSATION_LENGTH = 10
