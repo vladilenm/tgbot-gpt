@@ -51,6 +51,15 @@ async function start() {
 
     console.log('MongoDB Connected and bot started.')
 
+    process.on('uncaughtException', (err) => {
+      console.error('Неперехваченное исключение:', err)
+      process.exit(1)
+    })
+
+    process.on('unhandledRejection', (reason) => {
+      console.error('Неперехваченное отклонение промиса:', reason)
+    })
+
     process.once('SIGINT', () => bot.stop('SIGINT'))
     process.once('SIGTERM', () => bot.stop('SIGTERM'))
   } catch (e) {
