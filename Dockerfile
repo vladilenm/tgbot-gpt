@@ -12,4 +12,4 @@ RUN npm install -g pm2
 
 EXPOSE 3000
 
-CMD ["pm2-runtime", "start", "./src/main.js", "--no-daemon"]
+CMD ["pm2-runtime", "start", "./src/main.js"]
