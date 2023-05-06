@@ -83,8 +83,9 @@ export async function getUserConversations(ctx) {
   }
 }
 
-async function proccessGPTResponse(ctx, text) {
+async function proccessGPTResponse(ctx, text = '') {
   try {
+    if (!text.trim()) return
     ctx.session.messages.push(gptMessage(text))
     const response = await openai.chat(ctx.session.messages)
 
