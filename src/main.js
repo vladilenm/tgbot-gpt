@@ -56,8 +56,8 @@ async function start() {
       process.exit(1)
     })
 
-    process.on('unhandledRejection', (reason) => {
-      console.error('Неперехваченное отклонение промиса:', reason)
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Неперехваченное отклонение промиса:', reason, promise)
     })
 
     process.once('SIGINT', () => bot.stop('SIGINT'))
