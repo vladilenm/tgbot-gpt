@@ -60,8 +60,8 @@ async function start() {
       console.error('Неперехваченное отклонение промиса:', reason, promise)
     })
 
-    process.once('SIGINT', () => bot.stop('SIGINT'))
-    process.once('SIGTERM', () => bot.stop('SIGTERM'))
+    // process.once('SIGINT', () => bot.stop('SIGINT'))
+    // process.once('SIGTERM', () => bot.stop('SIGTERM'))
   } catch (e) {
     console.log('Server Error', e.message)
     process.exit(1)
