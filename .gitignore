@@ -5,3 +5,6 @@ build
 config/default.json
 config/production.json
 .env
+composer.lock
+voices/
+!voices/keep
