@@ -4,7 +4,6 @@ import axios from 'axios'
 import { createWriteStream } from 'fs'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { removeFile } from './utils.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

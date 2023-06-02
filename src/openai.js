@@ -18,13 +18,14 @@ class OpenAI {
     this.openai = new OpenAIApi(configuration)
   }
 
-  async chat(messages = []) {
+  async chat(messages = [], user = '') {
     try {
       const completion = await this.openai
         .createChatCompletion(
           {
             model: CHAT_GPT_MODEL,
             messages,
+            user,
           },
           {
             timeout: 180000,

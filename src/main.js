@@ -32,6 +32,7 @@ bot.command('history', getUserConversations)
 bot.command('admin', async (ctx) => {
   if (ctx.message.from.id !== config.get('ADMIN_TG_ID')) return
   await ctx.reply('Привет Владилен')
+  // ctx.sendAudio()
 })
 
 bot.on(message('voice'), proccessVoiceMessage)
@@ -53,11 +54,11 @@ async function start() {
 
     process.on('uncaughtException', (err) => {
       console.error('Неперехваченное исключение:', err)
-      process.exit(1)
+      // process.exit(1)
     })
 
     process.on('unhandledRejection', (reason, promise) => {
-      console.error('Неперехваченное отклонение промиса:', reason, promise)
+      console.error({ unhandledRejection: { reason, promise } })
     })
 
     // process.once('SIGINT', () => bot.stop('SIGINT'))

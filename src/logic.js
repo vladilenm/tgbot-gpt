@@ -87,7 +87,8 @@ async function proccessGPTResponse(ctx, text = '') {
   try {
     if (!text.trim()) return
     ctx.session.messages.push(gptMessage(text))
-    const response = await openai.chat(ctx.session.messages)
+    const userId = String(ctx.message.from.id)
+    const response = await openai.chat(ctx.session.messages, userId)
 
     console.log('DEBUG', ctx.session.messages)
 
@@ -99,6 +100,16 @@ async function proccessGPTResponse(ctx, text = '') {
     ctx.session.messages.push(
       gptMessage(response.content, openai.roles.ASSISTANT)
     )
+
+    // const audio = await textConverter.toSpeech(response.content)
+
+    // await ctx.sendAudio(
+    //   { source: audio },
+    //   {
+    //     title: 'Ответ от ассистента GPT',
+    //     performer: 'GPT',
+    //   }
+    // )
 
     await ctx.reply(response.content, {
       reply_markup: {
