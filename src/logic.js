@@ -22,7 +22,7 @@ export async function proccessVoiceMessage(ctx) {
     const text = await openai.transcription(mp3Path)
     removeFile(mp3Path)
     await ctx.reply(code(`Ваш запрос: ${text}`))
-    await proccessGPTResponse(ctx, text)
+    proccessGPTResponse(ctx, text)
   } catch (e) {
     await ctx.reply(
       `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${e.message}`
@@ -34,9 +34,9 @@ export async function proccessVoiceMessage(ctx) {
 export async function proccessTextMessage(ctx) {
   try {
     await ctx.reply(code('Секунду. Жду ответ от ChatGPT'))
-    await proccessGPTResponse(ctx, ctx.message.text)
+    proccessGPTResponse(ctx, ctx.message.text)
   } catch (e) {
-    await ctx.reply(
+    ctx.reply(
       `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${e.message}`
     )
     console.error(`Error while proccessing text message`, e.message)
@@ -49,13 +49,13 @@ export async function handleCallbackQuery(ctx) {
       const user = await mongo.createOrGetUser(ctx.update.callback_query.from)
       await mongo.saveConversation(ctx.session.messages, user._id)
       ctx.session = emptySession()
-      await ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую.')
+      ctx.reply('Переписка сохранена и закрыта. Вы можете начать новую.')
     } else if (ctx.update.callback_query.data.startsWith('conversation')) {
       const conversationId = ctx.update.callback_query.data.split('-')[1]
       const conversation = ctx.session.conversations.find(
         (c) => c._id == conversationId.trim()
       )
-      await ctx.replyWithHTML(printConversation(conversation))
+      ctx.replyWithHTML(printConversation(conversation))
     }
   } catch (e) {
     console.error(`Error while handling callback query`, e.message)
@@ -68,7 +68,7 @@ export async function getUserConversations(ctx) {
     const conversations = await mongo.getConversations(user._id)
     ctx.session.conversations = conversations
 
-    await ctx.reply(bold('Ваши переписки:'), {
+    ctx.reply(bold('Ваши переписки:'), {
       reply_markup: {
         inline_keyboard: conversations.map((c) => [
           {
@@ -93,7 +93,7 @@ async function proccessGPTResponse(ctx, text = '') {
     console.log('DEBUG', ctx.session.messages)
 
     if (!response)
-      return await ctx.reply(
+      return ctx.reply(
         `Ошибка с API. Скажи Владилену, чтоб пофиксил. ${response}`
       )
 
@@ -111,7 +111,7 @@ async function proccessGPTResponse(ctx, text = '') {
     //   }
     // )
 
-    await ctx.reply(response.content, {
+    ctx.reply(response.content, {
       reply_markup: {
         inline_keyboard: [
           [
