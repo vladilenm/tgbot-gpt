@@ -10,7 +10,9 @@ import {
 } from './logic.js'
 import { initCommand, normalize } from './utils.js'
 
-const bot = new Telegraf(config.get('TELEGRAM_TOKEN'))
+const bot = new Telegraf(config.get('TELEGRAM_TOKEN'), {
+  handlerTimeout: Infinity,
+})
 
 bot.use(session())
 bot.use(normalize())

@@ -20,19 +20,11 @@ class OpenAI {
 
   async chat(messages = [], user = '') {
     try {
-      const completion = await this.openai
-        .createChatCompletion(
-          {
-            model: CHAT_GPT_MODEL,
-            messages,
-            user,
-          },
-          {
-            timeout: 180000,
-            timeoutErrorMessage: 'Timeout error 180 000',
-          }
-        )
-        .catch((err) => console.log('wtf', err))
+      const completion = await this.openai.createChatCompletion({
+        model: CHAT_GPT_MODEL,
+        messages,
+        user,
+      })
 
       console.log('Usage', completion.data.usage)
 
